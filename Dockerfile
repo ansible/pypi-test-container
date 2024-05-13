@@ -1,17 +1,11 @@
-FROM quay.io/bedrock/ubuntu:focal-20210325
+FROM quay.io/bedrock/alpine:3.19.1
 
-RUN apt-get update -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    python3-pip \
-    && \
-    apt-get clean \
-    && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY files/pip/*.txt /tmp/
+COPY files/pip/*.txt /root/setup/
 COPY files/devpi-server/devpi-server.yml /root/.config/devpi-server/devpi-server.yml
 
-RUN pip3 install -r /tmp/requirements.txt -c /tmp/constraints.txt --disable-pip-version-check --no-cache
+RUN apk --no-cache add python3
+RUN python -m venv /root/devpi/
+RUN /root/devpi/bin/pip install -r /root/setup/requirements.txt -c /root/setup/constraints.txt --disable-pip-version-check && rm -rf /root/.cache/
+RUN /root/devpi/bin/devpi-init
 
-RUN /usr/local/bin/devpi-init
-CMD /usr/local/bin/devpi-server
+CMD /root/devpi/bin/devpi-server
