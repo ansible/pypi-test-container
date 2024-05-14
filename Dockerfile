@@ -4,7 +4,7 @@ RUN apk add --no-cache python3
 
 FROM base as builder
 
-RUN apk add --no-cache gcc
+RUN apk add --no-cache gcc python3-dev
 
 COPY files/pip/*.txt /tmp/setup/
 
