@@ -23,6 +23,9 @@ FROM base as output
 COPY --from=builder /root/devpi/ /root/devpi/
 COPY files/devpi-server/devpi-server.yml /root/.config/devpi-server/devpi-server.yml
 
+# Avoid `pkg_resources` deprecation warning caused by the `pyramid` package.
+ENV PYTHONWARNINGS="ignore:pkg_resources is deprecated as an API:UserWarning:pyramid.path:0"
+
 RUN /root/devpi/bin/devpi-init
 
 CMD /root/devpi/bin/devpi-server
